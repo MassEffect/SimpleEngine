@@ -19,6 +19,13 @@ namespace  SimpleEngine
     {
         std::cout << "Hello from Simple Engine Core" << std::endl;
         m_pWindow = std::make_unique<Window>(title, window_width, window_height);
+        m_pWindow -> set_event_callback(
+            [](Event& event)
+            {
+                LOG_INFO("[EVENT] Changed size to {0}x{1}", event.width, event.height);
+            }
+        );
+
 
         while(true)
         {
