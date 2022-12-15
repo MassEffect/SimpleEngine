@@ -3,6 +3,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <imgui/imgui.h>
+#include <imgui/backends/imgui_impl_opengl3.h>
+#include <imgui/backends/imgui_impl_glfw.h>
+
 namespace SimpleEngine
 {
     static bool s_GLFW_initialized = false;
@@ -11,6 +15,11 @@ namespace SimpleEngine
         : m_data({std::move(title), width, height})
     {
         int resultCode = init();
+
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGui_ImplOpenGL3_Init();
+        ImGui_ImplGlfw_InitForOpenGL(m_pWindow, true);
     };
 
     Window::~Window()
@@ -20,8 +29,27 @@ namespace SimpleEngine
 
     void Window::on_update()
     {
-         glClearColor(1, 0, 0, 0);
+         glClearColor(m_backround_color[0], m_backround_color[1], m_backround_color[2], m_backround_color[3]);
          glClear(GL_COLOR_BUFFER_BIT);
+
+         ImGuiIO& io = ImGui::GetIO();
+         io.DisplaySize.x = static_cast<float>(get_width());
+         io.DisplaySize.y = static_cast<float>(get_height());
+
+         ImGui_ImplOpenGL3_NewFrame();
+         ImGui_ImplGlfw_NewFrame();
+         ImGui::NewFrame();
+
+         ImGui::ShowDemoWindow();
+
+         ImGui::Begin("Background Color Window");
+         ImGui::ColorEdit4("Background Color", m_backround_color);
+         ImGui::End();
+
+         ImGui::Render();
+         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+
          glfwSwapBuffers(m_pWindow);
          glfwPollEvents();
     };
