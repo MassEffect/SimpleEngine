@@ -105,18 +105,18 @@ namespace SimpleEngine
         glDeleteBuffers(1, &m_id);
     };
 
-    VertexBuffer::VertexBuffer(VertexBuffer&& vertexBuffer)noexcept
-        : m_id(vertexBuffer.m_id)
-        , m_buffer_layout(std::move(vertexBuffer.m_buffer_layout))
+    VertexBuffer::VertexBuffer(VertexBuffer&& vertex_buffer)noexcept
+        : m_id(vertex_buffer.m_id)
+        , m_buffer_layout(std::move(vertex_buffer.m_buffer_layout))
     {
-        vertexBuffer.m_id = 0;
+        vertex_buffer.m_id = 0;
     };
 
-    VertexBuffer& VertexBuffer::operator=(VertexBuffer&& vertexBuffer)noexcept
+    VertexBuffer& VertexBuffer::operator=(VertexBuffer&& vertex_buffer)noexcept
     {
-        m_id = vertexBuffer.m_id;
-        m_buffer_layout = std::move(vertexBuffer.m_buffer_layout);
-        vertexBuffer.m_id = 0;
+        m_id = vertex_buffer.m_id;
+        m_buffer_layout = std::move(vertex_buffer.m_buffer_layout);
+        vertex_buffer.m_id = 0;
         return *this;
     };
 

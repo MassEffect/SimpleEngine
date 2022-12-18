@@ -18,7 +18,7 @@ namespace SimpleEngine
             Window(const Window&) = delete;
             Window(Window&&) = delete;
             Window& operator=(const Window&) = delete;
-            Window& operator=(Window&) = delete;
+            Window& operator=(Window&&) = delete;
 
 
             virtual void on_update();

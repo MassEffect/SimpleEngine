@@ -67,8 +67,8 @@ namespace SimpleEngine
 
         VertexBuffer(const VertexBuffer&) = delete;
         VertexBuffer& operator=(const VertexBuffer&) = delete;
-        VertexBuffer(VertexBuffer&& vertexBuffer) noexcept;
-        VertexBuffer& operator=(VertexBuffer&& vertexBuffer) noexcept;
+        VertexBuffer(VertexBuffer&& vertex_buffer) noexcept;
+        VertexBuffer& operator=(VertexBuffer&& vertex_buffer) noexcept;
 
         void bind()const;
         static void unbind();
