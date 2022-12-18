@@ -31,15 +31,24 @@ namespace SimpleEngine
         return *this;
     };
 
-    void VertexArray::add_buffer(const VertexBuffer& vertexBuffer)
+    void VertexArray::add_buffer(const VertexBuffer& vertex_buffer)
     {
         bind();
-        vertexBuffer.bind();
+        vertex_buffer.bind();
 
-        glEnableVertexAttribArray(m_elements_count);
-        glVertexAttribPointer(m_elements_count, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-
-        ++m_elements_count;
+        for(const BufferElement& current_element : vertex_buffer.get_layout().get_elements())
+        {
+            glEnableVertexAttribArray(m_elements_count);
+            glVertexAttribPointer(
+                m_elements_count,
+                static_cast<GLint>(current_element.components_count),
+                current_element.component_type,
+                GL_FALSE,
+                static_cast<GLsizei>(vertex_buffer.get_layout().get_stride()),
+                reinterpret_cast<const void*>(current_element.offset)
+            );
+            ++m_elements_count;
+        };
     };
 
     void VertexArray::bind()const
