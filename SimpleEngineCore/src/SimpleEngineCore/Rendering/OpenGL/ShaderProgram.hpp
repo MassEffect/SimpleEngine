@@ -1,5 +1,6 @@
 #pragma once
 #include <glad/glad.h>
+#include <glm/mat4x4.hpp>
 
 namespace SimpleEngine
 {
@@ -19,6 +20,7 @@ namespace SimpleEngine
         static void unbind();
         static bool create_shader(const char* source, const GLenum shader_type, GLuint& shader_id);
         bool isCompiled() { return m_isCompiled;};
+        void setMatrix4(const char* name, const glm::mat4& matrix)const;
 
     private:
         bool m_isCompiled = false;

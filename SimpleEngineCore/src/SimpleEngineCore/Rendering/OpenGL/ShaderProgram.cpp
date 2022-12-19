@@ -1,5 +1,6 @@
 #include "SimpleEngineCore/Rendering/OpenGL/ShaderProgram.hpp"
 #include "SimpleEngineCore/Log.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 namespace SimpleEngine
 {
@@ -88,6 +89,11 @@ namespace SimpleEngine
         shaderProgram.m_id = 0;
         shaderProgram.m_isCompiled = false;
         return *this;
+    };
+
+    void ShaderProgram::setMatrix4(const char* name, const glm::mat4& matrix)const
+    {
+        glUniformMatrix4fv(glGetUniformLocation(m_id, name), 1, GL_FALSE, glm::value_ptr(matrix));
     };
 
     ShaderProgram::~ShaderProgram()
