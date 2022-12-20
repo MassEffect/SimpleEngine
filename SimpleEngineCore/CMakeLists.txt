@@ -6,6 +6,7 @@ set(ENGINE_PUBLIC_INCLUDES
 	includes/SimpleEngineCore/Application.hpp
 	includes/SimpleEngineCore/Log.hpp
 	includes/SimpleEngineCore/Event.hpp
+	includes/SimpleEngineCore/Camera.hpp
 )
 
 set(ENGINE_PRIVATE_INCLUDES
@@ -20,6 +21,7 @@ set(ENGINE_PRIVATE_INCLUDES
 set(ENGINE_PRIVATE_SOURCES
 	src/SimpleEngineCore/Application.cpp
 	src/SimpleEngineCore/Window.cpp
+	src/SimpleEngineCore/Camera.cpp
 	src/SimpleEngineCore/Rendering/OpenGL/ShaderProgram.cpp
 	src/SimpleEngineCore/Rendering/OpenGL/VertexBuffer.cpp
 	src/SimpleEngineCore/Rendering/OpenGL/IndexBuffer.cpp
