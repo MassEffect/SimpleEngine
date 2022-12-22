@@ -1,24 +1,24 @@
 #include "SimpleEngineCore/Window.hpp"
 #include "SimpleEngineCore/Log.hpp"
-#include <glad/glad.h>
+#include "SimpleEngineCore/Rendering/OpenGL/ShaderProgram.hpp"
+#include "SimpleEngineCore/Rendering/OpenGL/VertexBuffer.hpp"
+#include "SimpleEngineCore/Rendering/OpenGL/VertexArray.hpp"
+#include "SimpleEngineCore/Rendering/OpenGL/IndexBuffer.hpp"
+#include "SimpleEngineCore/Camera.hpp"
+
+#include "SimpleEngineCore/Rendering/OpenGL/Renderer_OpenGL.hpp"
+
 #include <GLFW/glfw3.h>
 
 #include <imgui/imgui.h>
 #include <imgui/backends/imgui_impl_opengl3.h>
 #include <imgui/backends/imgui_impl_glfw.h>
 
-#include "SimpleEngineCore/Rendering/OpenGL/ShaderProgram.hpp"
-#include "SimpleEngineCore/Rendering/OpenGL/VertexBuffer.hpp"
-#include "SimpleEngineCore/Rendering/OpenGL/VertexArray.hpp"
-#include "SimpleEngineCore/Rendering/OpenGL/IndexBuffer.hpp"
-
 #include <glm/mat3x3.hpp>
 #include <glm/trigonometric.hpp>
-#include <SimpleEngineCore/Camera.hpp>
 
 namespace SimpleEngine
 {
-    static bool s_GLFW_initialized = false;
 
     GLfloat positions_colors2[] = {
        -0.5f, -0.5f, 0.0f,   1.0f, 1.0f, 0.0f,
@@ -84,8 +84,8 @@ namespace SimpleEngine
 
     void Window::on_update()
     {
-         glClearColor(m_backround_color[0], m_backround_color[1], m_backround_color[2], m_backround_color[3]);
-         glClear(GL_COLOR_BUFFER_BIT);
+         Renderer_OpenGL::set_clear_color(m_backround_color[0], m_backround_color[1], m_backround_color[2], m_backround_color[3]);
+         Renderer_OpenGL::clear();
 
          ImGuiIO& io = ImGui::GetIO();
          io.DisplaySize.x = static_cast<float>(get_width());
@@ -136,8 +136,7 @@ namespace SimpleEngine
          camera.set_projection_mode(perspective_camera ? Camera::ProjectionMode::Perspective : Camera::ProjectionMode::Orthographic);
          p_shader_program -> setMatrix4("view_projection_matrix", camera.get_projection_matrix() * camera.get_view_matrix());
 
-         p_vao -> bind();
-         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(p_vao -> get_indices_count()), GL_UNSIGNED_INT, nullptr);
+         Renderer_OpenGL::draw(*p_vao);
 
          ImGui::End();
 
@@ -153,16 +152,16 @@ namespace SimpleEngine
     {
         LOG_INFO("Creating window '{0}' width size {1}x{2}", m_data.title, m_data.width, m_data.height);
 
-        if(!s_GLFW_initialized)
-        {
-                    /* Initialize the library */
-            if (!glfwInit())
-            {
-                LOG_CRITICAL("Can't initialize GLFW!");
-                return -1;
-            }
+        glfwSetErrorCallback([](int error_code, const char* description)
+                             {
+                                 LOG_CRITICAL("GLFW error: {0}", description);
+                             });
 
-            s_GLFW_initialized = true;
+        /* Initialize the library */
+        if (!glfwInit())
+        {
+            LOG_CRITICAL("Can't initialize GLFW!");
+            return -1;
         };
 
         /* Create a windowed mode window and its OpenGL context */
@@ -170,17 +169,13 @@ namespace SimpleEngine
         if (!m_pWindow)
         {
             LOG_CRITICAL("Can't create window {0} width size {1}x{2}", m_data.title, m_data.width, m_data.height);
-            glfwTerminate();
             return -2;
         }
 
-        /* Make the window's context current */
-        glfwMakeContextCurrent(m_pWindow);
-
-        if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+        if(!Renderer_OpenGL::init(m_pWindow))
         {
-             LOG_CRITICAL("Failed to initialize GLAD");
-             return -3;
+            LOG_CRITICAL("Failed to initialized openGL renderer!");
+            return -3;
         };
 
         glfwSetWindowUserPointer(m_pWindow, &m_data);
@@ -218,7 +213,7 @@ namespace SimpleEngine
         glfwSetFramebufferSizeCallback(m_pWindow,
             [](GLFWwindow* pWindow, int width, int height)
             {
-                glViewport(0, 0, width, height);
+                Renderer_OpenGL::set_viewport(width, height);
             }
         );
 
@@ -241,29 +236,16 @@ namespace SimpleEngine
         p_vao -> add_vertex_buffer(*p_position_colors_vbo);
         p_vao -> set_index_buffer(*p_index_buffer);
 
-
-        glm::mat3 mat_1(4, 0, 0, 2, 8, 1, 0, 1, 0);
-        glm::mat3 mat_2(4, 2, 9, 2, 0, 4, 1, 4, 2);
-
-        glm::mat3 result_mat = mat_1 * mat_2;
-
-        LOG_INFO("");
-        LOG_INFO("|{0:3} {1:3} {2:3}|", result_mat[0][0], result_mat[1][0], result_mat[2][0]);
-        LOG_INFO("|{0:3} {1:3} {2:3}|", result_mat[0][1], result_mat[1][1], result_mat[2][1]);
-        LOG_INFO("|{0:3} {1:3} {2:3}|", result_mat[0][2], result_mat[1][2], result_mat[2][2]);
-        LOG_INFO("");
-
-        glm::vec4 vec(1,2,3,4);
-        glm::mat4 mat_identity(1);
-
-        glm::vec4 result_vec = mat_identity * vec;
-        LOG_INFO("({0} {1} {2} {3})", result_vec.x, result_vec.y, result_vec.z, result_vec.w);
-
         return 0;
     };
 
     void Window::shutdown()
     {
+        if(ImGui::GetCurrentContext())
+        {
+            ImGui::DestroyContext();
+        };
+
         glfwDestroyWindow(m_pWindow);
         glfwTerminate();
     };
