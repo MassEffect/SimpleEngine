@@ -1,12 +1,22 @@
 #include <iostream>
 #include "SimpleEngineCore/Application.hpp"
 #include <memory>
+#include <imgui/imgui.h>
 
-class MyApp : public SimpleEngine::Application
+class SimpleEngineEditor : public SimpleEngine::Application
 {
     virtual void on_update() override
     {
        // std::cout << "Update frame:" << ++frame << std::endl;
+    };
+
+    virtual void on_ui_draw() override
+    {
+        ImGui::Begin("Editor");
+        ImGui::SliderFloat3("camera_position", camera_position, -10.f, 10.f);
+        ImGui::SliderFloat3("camera_rotation", camera_rotation, 0.f, 360.f);
+        ImGui::Checkbox("perspective_camera", &perspective_camera);
+        ImGui::End();
     };
 
     int frame = 0;
@@ -14,9 +24,9 @@ class MyApp : public SimpleEngine::Application
 
 int main()
 {
-   auto myApp = std::make_unique<MyApp>();
+   auto pSimpleEngineEditor = std::make_unique<SimpleEngineEditor>();
 
-   int returnCode = myApp -> start(1024, 768, "My first app");
+   int returnCode = pSimpleEngineEditor -> start(1024, 768, "My first SimpleEngineEditor");
 
    std::cin.get();
    return returnCode;

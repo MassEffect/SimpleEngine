@@ -20,7 +20,6 @@ namespace SimpleEngine
             Window& operator=(const Window&) = delete;
             Window& operator=(Window&&) = delete;
 
-
             virtual void on_update();
             unsigned int get_width()const {return m_data.width;};
             unsigned int get_height()const {return m_data.height;};
@@ -41,8 +40,5 @@ namespace SimpleEngine
 
             GLFWwindow* m_pWindow = nullptr;
             WindowData m_data;
-            float m_backround_color[4] = {0.33f, 0.33f, 0.33f, 0.f};
-
     };
-
 }
