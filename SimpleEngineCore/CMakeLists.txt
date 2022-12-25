@@ -7,6 +7,8 @@ set(ENGINE_PUBLIC_INCLUDES
 	includes/SimpleEngineCore/Log.hpp
 	includes/SimpleEngineCore/Event.hpp
 	includes/SimpleEngineCore/Camera.hpp
+	includes/SimpleEngineCore/Keys.hpp
+	includes/SimpleEngineCore/Input.hpp
 )
 
 set(ENGINE_PRIVATE_INCLUDES
@@ -17,7 +19,7 @@ set(ENGINE_PRIVATE_INCLUDES
 	src/SimpleEngineCore/Rendering/OpenGL/IndexBuffer.hpp
 	src/SimpleEngineCore/Rendering/OpenGL/VertexArray.hpp
 	src/SimpleEngineCore/Rendering/OpenGL/Renderer_OpenGL.hpp
-	
+
 )
 
 set(ENGINE_PRIVATE_SOURCES
@@ -30,6 +32,7 @@ set(ENGINE_PRIVATE_SOURCES
 	src/SimpleEngineCore/Rendering/OpenGL/IndexBuffer.cpp
 	src/SimpleEngineCore/Rendering/OpenGL/VertexArray.cpp
 	src/SimpleEngineCore/Rendering/OpenGL/Renderer_OpenGL.cpp
+	src/SimpleEngineCore/Input.cpp
 )
 
 set(ENGINE_ALL_SOURCES
@@ -80,7 +83,7 @@ set(IMGUI_SOURCES
 
 add_library(ImGui STATIC
 		${IMGUI_INCLUDES}
-		${IMGUI_SOURCES}		
+		${IMGUI_SOURCES}
 )
 
 target_include_directories(ImGui PUBLIC ../external)
