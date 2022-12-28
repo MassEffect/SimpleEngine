@@ -19,6 +19,7 @@ set(ENGINE_PRIVATE_INCLUDES
 	src/SimpleEngineCore/Rendering/OpenGL/IndexBuffer.hpp
 	src/SimpleEngineCore/Rendering/OpenGL/VertexArray.hpp
 	src/SimpleEngineCore/Rendering/OpenGL/Renderer_OpenGL.hpp
+	src/SimpleEngineCore/Rendering/OpenGL/Texture2D.hpp
 
 )
 
@@ -32,6 +33,7 @@ set(ENGINE_PRIVATE_SOURCES
 	src/SimpleEngineCore/Rendering/OpenGL/IndexBuffer.cpp
 	src/SimpleEngineCore/Rendering/OpenGL/VertexArray.cpp
 	src/SimpleEngineCore/Rendering/OpenGL/Renderer_OpenGL.cpp
+	src/SimpleEngineCore/Rendering/OpenGL/Texture2D.cpp
 	src/SimpleEngineCore/Input.cpp
 )
 

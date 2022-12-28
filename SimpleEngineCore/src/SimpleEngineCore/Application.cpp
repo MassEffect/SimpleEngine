@@ -9,8 +9,8 @@
 #include "SimpleEngineCore/Rendering/OpenGL/Renderer_OpenGL.hpp"
 #include "SimpleEngineCore/Modules/UIModule.hpp"
 #include "SimpleEngineCore/Input.hpp"
+#include "SimpleEngineCore/Rendering/OpenGL/Texture2D.hpp"
 #include <imgui/imgui.h>
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/mat3x3.hpp>
 #include <glm/trigonometric.hpp>
@@ -20,10 +20,10 @@
 namespace  SimpleEngine
 {
      GLfloat positions_colors_coords[] = {
-        0.0f, -0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   2.f, -1.f,
-        0.0f,  0.5f, -0.5f,   0.0f, 1.0f, 1.0f,  -1.f, -1.f,
-        0.0f, -0.5f,  0.5f,   1.0f, 0.0f, 1.0f,   2.f,  2.f,
-        0.0f,  0.5f,  0.5f,   1.0f, 0.0f, 0.0f,  -1.f,  2.f
+        0.0f, -0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   -1.f,     2.f,
+        0.0f,  0.5f, -0.5f,   0.0f, 1.0f, 1.0f,   2.f,      2.f,
+        0.0f, -0.5f,  0.5f,   1.0f, 0.0f, 1.0f,   -1.f,     -1.f,
+        0.0f,  0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   2.f,      -1.f
     };
 
     GLuint indices[] = {
@@ -141,6 +141,7 @@ namespace  SimpleEngine
         void main() {
             //frag_color = vec4(color, 1.0);
             frag_color = texture(InTexture_smile, tex_coord_smile) * texture(InTexture_quads, tex_coord_quads);
+
         }
         )";
 
@@ -148,6 +149,8 @@ namespace  SimpleEngine
     std::unique_ptr<VertexBuffer>   p_position_colors_vbo;
     std::unique_ptr<IndexBuffer>    p_index_buffer;
     std::unique_ptr<VertexArray>    p_vao;
+    std::unique_ptr<Texture2D>      p_texture_smile;
+    std::unique_ptr<Texture2D>      p_texture_quads;
     float scale[3] = {1.f, 1.f, 1.f};
     float rotate = 0.0f;
     float translate[3] = {0.f, 0.f, 0.f};
@@ -247,32 +250,18 @@ namespace  SimpleEngine
             }
         );
 
-        const unsigned int width = 1000;
-        const unsigned int height = 1000;
+        const unsigned int width = 100;
+        const unsigned int height = 100;
         const unsigned int channels = 3;
         auto* data = new unsigned char[width * height * channels];
 
-        GLuint textureHandle_smile;
-        glCreateTextures(GL_TEXTURE_2D, 1, &textureHandle_smile);
-        glTextureStorage2D(textureHandle_smile, 1, GL_RGB8, width, height);
         generate_smile_texture(data, width, height);
-        glTextureSubImage2D(textureHandle_smile, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glTextureParameteri(textureHandle_smile, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTextureParameteri(textureHandle_smile, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTextureParameteri(textureHandle_smile, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTextureParameteri(textureHandle_smile, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBindTextureUnit(0, textureHandle_smile);
+        p_texture_smile = std::make_unique<Texture2D>(data, width, height);
+        p_texture_smile -> bind(1);
 
-        GLuint textureHandle_quads;
-        glCreateTextures(GL_TEXTURE_2D, 1, &textureHandle_quads);
-        glTextureStorage2D(textureHandle_quads, 1, GL_RGB8, width, height);
         generate_quads_texture(data, width, height);
-        glTextureSubImage2D(textureHandle_quads, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glTextureParameteri(textureHandle_quads, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTextureParameteri(textureHandle_quads, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTextureParameteri(textureHandle_quads, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTextureParameteri(textureHandle_quads, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBindTextureUnit(1, textureHandle_quads);
+        p_texture_quads = std::make_unique<Texture2D>(data, width, height);
+        p_texture_quads -> bind(0);
 
         delete [] data;
 
@@ -358,8 +347,6 @@ namespace  SimpleEngine
              on_update();
         };
 
-        glDeleteTextures(1, &textureHandle_smile);
-        glDeleteTextures(1, &textureHandle_quads);
         m_pWindow = nullptr;
 
         return 0;
